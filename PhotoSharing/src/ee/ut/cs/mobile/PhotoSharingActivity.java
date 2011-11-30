@@ -59,11 +59,10 @@ public class PhotoSharingActivity extends Activity {
         // Store a test image into internal storage
         Bitmap testImage = BitmapFactory.decodeResource(getResources(),R.drawable.test);
         OutputStream os;
-        String path = getApplicationContext().getFilesDir() + "/images/";
+        File path = getImageStoragePath();
 		try {
-			File file = new File(path);
-			file.mkdirs();
-			os = new BufferedOutputStream(new FileOutputStream(path + "testImage.jpg", true));
+			path.mkdirs();
+			os = new BufferedOutputStream(new FileOutputStream(path.getPath() + File.separator + "testImage.jpg", true));
 	        testImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
 	        os.flush();
 	        os.close();
@@ -75,11 +74,13 @@ public class PhotoSharingActivity extends Activity {
 
 		
 		// Read images from the storage
-		File file = new File(path);
-		File[] files = file.listFiles();
+		File[] files = path.listFiles();
 		for (File f : files) {
-			Uri uri = Uri.fromFile(f);
-	    	pictures.add(uri);
+			if (f.isFile()) {
+				Log.d("PhotoSharing", f.toString());
+				Uri uri = Uri.fromFile(f);
+				pictures.add(uri);
+			}
 		}
     	adapter.notifyDataSetChanged();
         
@@ -91,11 +92,8 @@ public class PhotoSharingActivity extends Activity {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // Image captured and saved to fileUri specified in the Intent
-                //Toast.makeText(this, "Image saved to:\n" +
-                //         data.getData(), Toast.LENGTH_LONG).show();
-				Toast.makeText(this,
-						(data == null) ? "Result: null" : "Result: " + data.getData(),
-						Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Image saved to:\n" +
+                         data.getData(), Toast.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 // User cancelled the image capture
             } else {
@@ -105,19 +103,26 @@ public class PhotoSharingActivity extends Activity {
     }
 
     /** Create a file Uri for saving an image */
-    private static Uri getOutputMediaFileUri(){
+    private Uri getOutputMediaFileUri() {
           return Uri.fromFile(getOutputMediaFile());
     }
 
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                  Environment.DIRECTORY_PICTURES), "PhotoSharing");
+    private File getImageStoragePath() {
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
+    	return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    	
+    	//return new File(getApplicationContext().getFilesDir() + "/images");
+    }
+    
+    /** Create a File for saving an image or video */
+    private File getOutputMediaFile(){
+    	if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+    		Log.d("PhotoSharing", "SD card not mounted! State: " + Environment.getExternalStorageState());
+    		return null;
+    	}
+    	
+        File mediaStorageDir = getImageStoragePath(); 
 
         // Create the storage directory if it does not exist
         if (! mediaStorageDir.exists()){
