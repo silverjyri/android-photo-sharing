@@ -32,7 +32,7 @@ public class PictureEditorActivity extends Activity {
 	
 	Uri uri;
 	ImageView image;
-	Bitmap bitmap = null;
+	Bitmap bitmap;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,8 @@ public class PictureEditorActivity extends Activity {
 		image.setImageURI(uri);
 		registerForContextMenu(image);
 		image.setClickable(true);
+		bitmap = null;
+		
 		
 	}
 	
@@ -89,7 +91,7 @@ public class PictureEditorActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			image.setImageBitmap(toGrayscale(bitmap));
+			image.setImageBitmap(bitmap = toGrayscale(bitmap));
 			break;
 		case 1:
 			
@@ -125,7 +127,6 @@ public class PictureEditorActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
 	        moveTaskToBack(true);
-	        PhotoSharingActivity.adapter.notifyDataSetChanged();
 	        return true;
 	    }
 	    return super.onKeyDown(keyCode, event);
