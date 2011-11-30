@@ -3,5 +3,8 @@
 
     <string name="hello">Hello World, PhotoSharingActivity!</string>
     <string name="app_name">Photo Sharing</string>
+    <string name="deletetext">Delete</string>
+    <string name="edittext">Edit</string>
+    <string name="sendtext">Send</string>
 
 </resources>

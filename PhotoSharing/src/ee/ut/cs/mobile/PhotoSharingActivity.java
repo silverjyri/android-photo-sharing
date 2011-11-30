@@ -19,7 +19,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -54,6 +58,8 @@ public class PhotoSharingActivity extends Activity {
         ListView pictureList = (ListView) findViewById(R.id.pictureList);
         PictureListAdapter adapter = new PictureListAdapter(this, R.layout.picturelistitem, R.id.textid, pictures);
         pictureList.setAdapter(adapter);
+        registerForContextMenu(pictureList);
+        pictureList.setClickable(true);
 
 
         // Store a test image into internal storage
@@ -87,6 +93,24 @@ public class PhotoSharingActivity extends Activity {
         setNumPictures(pictures.size());
     }
     
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		menu.setHeaderTitle(pictures.get(info.position).toString());
+		//menu.setHeaderTitle("sds");
+		//menu.add("sads");
+		menu.add(R.string.edittext);
+		menu.add(R.string.sendtext);
+		menu.add(R.string.deletetext);
+	}
+    
+	@Override
+	public boolean onContextItemSelected(MenuItem menuItem) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
+		//pictures.remove(info.position);
+		return true;
+	}
+	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
