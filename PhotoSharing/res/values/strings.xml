@@ -6,5 +6,6 @@
     <string name="deletetext">Delete</string>
     <string name="edittext">Edit</string>
     <string name="sendtext">Send</string>
+    <string name="editor_name">Photo Editor</string>
 
 </resources>

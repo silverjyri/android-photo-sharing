@@ -20,8 +20,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -33,6 +33,7 @@ public class PhotoSharingActivity extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
 	ArrayList<Uri> pictures = new ArrayList<Uri>();
+	PictureListAdapter adapter;
 	
     /** Called when the activity is first created. */
     @Override
@@ -56,7 +57,7 @@ public class PhotoSharingActivity extends Activity {
 		});
 
         ListView pictureList = (ListView) findViewById(R.id.pictureList);
-        PictureListAdapter adapter = new PictureListAdapter(this, R.layout.picturelistitem, R.id.textid, pictures);
+        adapter = new PictureListAdapter(this, R.layout.picturelistitem, R.id.textid, pictures);
         pictureList.setAdapter(adapter);
         registerForContextMenu(pictureList);
         pictureList.setClickable(true);
@@ -97,17 +98,34 @@ public class PhotoSharingActivity extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 		menu.setHeaderTitle(pictures.get(info.position).toString());
-		//menu.setHeaderTitle("sds");
-		//menu.add("sads");
-		menu.add(R.string.edittext);
-		menu.add(R.string.sendtext);
-		menu.add(R.string.deletetext);
+		menu.add(0, 0, 0, R.string.edittext);
+		menu.add(0, 1, 1, R.string.sendtext);
+		menu.add(0, 2, 2, R.string.deletetext);
 	}
     
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
-		//pictures.remove(info.position);
+		
+		Uri item = pictures.get(info.position);
+		
+		switch (menuItem.getItemId()) {
+		case 0:
+			Intent editorActivity = new Intent(this, PictureEditorActivity.class);
+			editorActivity.setData(item);
+	        startActivityForResult(editorActivity, 0);
+			break;
+		case 1:
+			break;
+		case 2:
+			pictures.remove(info.position);
+			adapter.notifyDataSetChanged();
+			setNumPictures(pictures.size());
+			File file = new File(item.getPath());
+			file.delete();
+			break;
+		}
+
 		return true;
 	}
 	
