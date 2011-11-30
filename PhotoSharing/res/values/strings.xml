@@ -7,5 +7,6 @@
     <string name="edittext">Edit</string>
     <string name="sendtext">Send</string>
     <string name="editor_name">Photo Editor</string>
+    <string name="capture_name">Image Capture</string>
 
 </resources>

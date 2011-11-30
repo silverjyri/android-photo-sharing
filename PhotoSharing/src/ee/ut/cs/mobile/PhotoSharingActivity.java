@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -42,17 +42,23 @@ public class PhotoSharingActivity extends Activity {
         setContentView(R.layout.main);
         
         Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
+        final Context context = this;
         takePictureButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View arg0) {
+	            Uri fileUri = getOutputMediaFileUri(); // create a file to save the image
+	            //intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+	            
+				Intent capture = new Intent(context, PictureCaptureActivity.class);
+				//capture.setData(fileUri);
+		        startActivityForResult(capture, 0);
+				/*
 	            // create Intent to take a picture and return control to the calling application
 	            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-	            Uri fileUri = getOutputMediaFileUri(); // create a file to save the image
-	            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
 	            // start the image capture Intent
 	            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+	            */
 			}
 		});
 

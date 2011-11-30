@@ -26,6 +26,10 @@
             android:label="@string/editor_name"
             android:name="PictureEditorActivity">
         </activity>
+        <activity
+            android:label="@string/capture_name"
+            android:name="PictureCaptureActivity">
+        </activity>
     </application>
 
 </manifest>
