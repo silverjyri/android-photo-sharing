@@ -1,11 +1,19 @@
 package ee.ut.cs.mobile;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,19 +21,20 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PhotoSharingActivity extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
+	ArrayList<Uri> pictures = new ArrayList<Uri>();
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        setNumPictures(0);
         
         Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
@@ -41,6 +50,40 @@ public class PhotoSharingActivity extends Activity {
 	            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 			}
 		});
+
+        ListView pictureList = (ListView) findViewById(R.id.pictureList);
+        PictureListAdapter adapter = new PictureListAdapter(this, R.layout.picturelistitem, R.id.textid, pictures);
+        pictureList.setAdapter(adapter);
+
+
+        // Store a test image into internal storage
+        Bitmap testImage = BitmapFactory.decodeResource(getResources(),R.drawable.test);
+        OutputStream os;
+        String path = getApplicationContext().getFilesDir() + "/images/";
+		try {
+			File file = new File(path);
+			file.mkdirs();
+			os = new BufferedOutputStream(new FileOutputStream(path + "testImage.jpg", true));
+	        testImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+	        os.flush();
+	        os.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		
+		// Read images from the storage
+		File file = new File(path);
+		File[] files = file.listFiles();
+		for (File f : files) {
+			Uri uri = Uri.fromFile(f);
+	    	pictures.add(uri);
+		}
+    	adapter.notifyDataSetChanged();
+        
+        setNumPictures(pictures.size());
     }
     
     @Override
