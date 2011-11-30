@@ -1,6 +1,6 @@
 package com.tomgibara.android.camera;
 
-import android.view.SurfaceHolder;
+import android.graphics.Bitmap;
 
 /**
  * Provides a simple abstraction for obtaining preview captures from a camera
@@ -48,7 +48,7 @@ public interface CameraSource {
 	int getHeight();
 	
 	/**
-	 * Attempts to render the current camera view onto the supplied canvas.
+	 * Attempts to render the current camera.
 	 * The capture will be rendered into the rectangle (0,0,width,height).
 	 * Outstanding transformations on the canvas may alter this.
 	 * 
@@ -56,6 +56,6 @@ public interface CameraSource {
 	 * @return true iff a frame was successfully written to the canvas
 	 */
 	
-	boolean capture(SurfaceHolder surfaceHolder);
+	Bitmap capture();
 	
 }

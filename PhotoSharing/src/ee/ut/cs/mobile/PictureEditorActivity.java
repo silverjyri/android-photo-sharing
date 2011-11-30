@@ -10,7 +10,6 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -19,13 +18,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.format.Time;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 
 public class PictureEditorActivity extends Activity {
@@ -46,8 +43,12 @@ public class PictureEditorActivity extends Activity {
 		registerForContextMenu(image);
 		image.setClickable(true);
 		bitmap = null;
-		
-		
+	}
+	
+	@Override
+	public void onBackPressed() {
+		finish();
+		super.onBackPressed();
 	}
 	
 	public Bitmap toGrayscale(Bitmap bmpOriginal)
@@ -122,15 +123,4 @@ public class PictureEditorActivity extends Activity {
     	
     	//return new File(getApplicationContext().getFilesDir() + "/images");
     }
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	        moveTaskToBack(true);
-	        return true;
-	    }
-	    return super.onKeyDown(keyCode, event);
-	}
-
-	
 }

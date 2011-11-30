@@ -2,6 +2,7 @@ package com.tomgibara.android.camera;
 
 import java.io.IOException;
 
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
@@ -17,12 +18,14 @@ public class GenuineCamera implements CameraSource {
 
 	private final int width;
 	private final int height;
+	private final SurfaceHolder surface;
 	
 	private Camera device = null;
 	
-	public GenuineCamera(int width, int height) {
+	public GenuineCamera(int width, int height, SurfaceHolder surface) {
 		this.width = width;
 		this.height = height;
+		this.surface = surface;
 	}
 	
 	public int getWidth() {
@@ -52,16 +55,16 @@ public class GenuineCamera implements CameraSource {
 		device = null;
 	}
 	
-	public boolean capture(SurfaceHolder surface) {
-		if (device == null) return false;
+	public Bitmap capture() {
+		if (device == null) return null;
 		try {
 			device.setPreviewDisplay(surface);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 		device.startPreview();
-		return true;
+		return null;
 	}
 
 }

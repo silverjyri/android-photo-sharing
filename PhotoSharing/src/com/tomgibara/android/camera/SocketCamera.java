@@ -7,11 +7,10 @@ import java.net.Socket;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-import android.view.SurfaceHolder;
+import android.widget.ImageView;
 
 /**
  * A CameraSource implementation that obtains its bitmaps via a TCP connection
@@ -29,14 +28,12 @@ public class SocketCamera implements CameraSource {
 	private final String address;
 	private final int port;
 	private final Rect bounds;
-	private final boolean preserveAspectRatio;
 	private final Paint paint = new Paint();
 
-	public SocketCamera(String address, int port, int width, int height, boolean preserveAspectRatio) {
+	public SocketCamera(String address, int port, int width, int height) {
 		this.address = address;
 		this.port = port;
 		bounds = new Rect(0, 0, width, height);
-		this.preserveAspectRatio = preserveAspectRatio;
 		
 		paint.setFilterBitmap(true);
 		paint.setAntiAlias(true);
@@ -56,12 +53,10 @@ public class SocketCamera implements CameraSource {
 	}
 
 
-	public boolean capture(SurfaceHolder surfaceHolder) {
-		if (surfaceHolder == null) throw new IllegalArgumentException("null canvas");
+	public Bitmap capture() {
+		Bitmap bitmap = null;
 		Socket socket = null;
 		try {
-			Canvas canvas = surfaceHolder.lockCanvas();
-
 			socket = new Socket();
 			socket.bind(null);
 			socket.setSoTimeout(SOCKET_TIMEOUT);
@@ -69,31 +64,12 @@ public class SocketCamera implements CameraSource {
 
 			//obtain the bitmap
 			InputStream in = socket.getInputStream();
-			Bitmap bitmap = BitmapFactory.decodeStream(in);
-			
-			//render it to canvas, scaling if necessary
-			if (
-					bounds.right == bitmap.getWidth() &&
-					bounds.bottom == bitmap.getHeight()) {
-				canvas.drawBitmap(bitmap, 0, 0, null);
-			} else {
-				Rect dest;
-				if (preserveAspectRatio) {
-					dest = new Rect(bounds);
-					dest.bottom = bitmap.getHeight() * bounds.right / bitmap.getWidth();
-					dest.offset(0, (bounds.bottom - dest.bottom)/2);
-				} else {
-					dest = bounds;
-				}
-				canvas.drawBitmap(bitmap, null, dest, paint);
-			}
+			bitmap = BitmapFactory.decodeStream(in);
 
 		} catch (RuntimeException e) {
 			Log.i(LOG_TAG, "Failed to obtain image over network", e);
-			return false;
 		} catch (IOException e) {
 			Log.i(LOG_TAG, "Failed to obtain image over network", e);
-			return false;
 		} finally {
 			try {
 				socket.close();
@@ -101,7 +77,7 @@ public class SocketCamera implements CameraSource {
 				/* ignore */
 			}
 		}
-		return true;
+		return bitmap;
 	}
 
 	public void close() {
