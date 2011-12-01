@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,6 +62,8 @@ public class PictureEditorActivity extends Activity {
 	        vibe.vibrate(100);
 	        Bitmap temp = bitmap;
 			bitmap = oldBitmap;
+			oldBitmap = temp;
+			temp = null;
 			imageView.setImageBitmap(bitmap);
 	      }
 	    });
@@ -108,7 +111,9 @@ public class PictureEditorActivity extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
-		menu.add(0, 1, 1, "Save");
+		menu.add(0, 1, 1, "Rotate 90CW");
+		menu.add(0, 2, 2, "Save");
+//		menu.add(0, 2, 2, "Undo");
 	}
     
 	@Override
@@ -121,8 +126,21 @@ public class PictureEditorActivity extends Activity {
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
-			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
+			oldBitmap = bitmap;
+			Matrix mat = new Matrix();
+	        mat.postRotate(90);
+	        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
+	        imageView.setImageBitmap(bitmap);
+		case 2:
+			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".jpg", this);
 			break;
+//		case 2:
+//			Bitmap temp = bitmap;
+//			bitmap = oldBitmap;
+//			oldBitmap = temp;
+//			temp = null;
+//			imageView.setImageBitmap(bitmap);
+//			break;
 		}
 
 		return true;
