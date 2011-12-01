@@ -1,11 +1,7 @@
 package ee.ut.cs.mobile;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Calendar;
 
 import android.app.Activity;
@@ -16,11 +12,9 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -28,21 +22,29 @@ import android.widget.ImageView;
 public class PictureEditorActivity extends Activity {
 	
 	Uri uri;
-	ImageView image;
+	ImageView imageView;
 	Bitmap bitmap;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editor);
 		
 		uri = getIntent().getData();
-		image = (ImageView) findViewById(R.id.editorImageView);
-		image.setImageURI(uri);
-		registerForContextMenu(image);
-		image.setClickable(true);
-		bitmap = null;
+		imageView = (ImageView) findViewById(R.id.editorImageView);
+		imageView.setImageURI(uri);
+		registerForContextMenu(imageView);
+		imageView.setClickable(true);
+		
+		try {
+			bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+		} catch (FileNotFoundException e) {
+			bitmap = null;
+			e.printStackTrace();
+		} catch (IOException e) {
+			bitmap = null;
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -71,7 +73,6 @@ public class PictureEditorActivity extends Activity {
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		File path = getImageStoragePath();
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "Save");
@@ -79,48 +80,17 @@ public class PictureEditorActivity extends Activity {
     
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
-		
+
 		switch (menuItem.getItemId()) {
 		case 0:
-			
-			try {
-				bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			image.setImageBitmap(bitmap = toGrayscale(bitmap));
+			bitmap = toGrayscale(bitmap);
+			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
-			
-			OutputStream os;
-		    File path = getImageStoragePath();
-		    try {
-				path.mkdirs();
-				os = new BufferedOutputStream(new FileOutputStream(path.getPath() + File.separator + "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", true));
-			    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-			    os.flush();
-			    os.close();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
+			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
 		}
 
 		return true;
 	}
-	
-	private File getImageStoragePath() {
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-    	return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-    	
-    	//return new File(getApplicationContext().getFilesDir() + "/images");
-    }
 }

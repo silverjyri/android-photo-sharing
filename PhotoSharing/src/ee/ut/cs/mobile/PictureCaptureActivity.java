@@ -1,16 +1,9 @@
 package ee.ut.cs.mobile;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.tomgibara.android.camera.CameraSource;
@@ -35,25 +28,8 @@ public class PictureCaptureActivity extends Activity {
 			captureView.setImageBitmap(bitmap);
 			
         	Uri data = getIntent().getData();
-        	Log.d("PictureCapture", data.getPath());
         	
-            OutputStream os;
-    		try {
-    			os = new BufferedOutputStream(new FileOutputStream(data.getPath(), true));
-    			if (bitmap != null) {
-    				bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-        	        os.flush();
-        	        os.close();
-    				setResult(RESULT_OK, getIntent());
-    		        finish();
-    			}
-    		} catch (FileNotFoundException e) {
-    			e.printStackTrace();
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
+        	MediaManager.saveBitmapImage(bitmap, data, this);
         }
-
     }
-
 }
