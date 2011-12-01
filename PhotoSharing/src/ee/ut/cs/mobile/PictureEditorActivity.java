@@ -61,8 +61,6 @@ public class PictureEditorActivity extends Activity {
 	        vibe.vibrate(100);
 	        Bitmap temp = bitmap;
 			bitmap = oldBitmap;
-			oldBitmap = temp;
-			temp = null;
 			imageView.setImageBitmap(bitmap);
 	      }
 	    });
@@ -111,7 +109,6 @@ public class PictureEditorActivity extends Activity {
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "Save");
-		menu.add(0, 2, 2, "Undo");
 	}
     
 	@Override
@@ -125,13 +122,6 @@ public class PictureEditorActivity extends Activity {
 			break;
 		case 1:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
-			break;
-		case 2:
-			Bitmap temp = bitmap;
-			bitmap = oldBitmap;
-			oldBitmap = temp;
-			temp = null;
-			imageView.setImageBitmap(bitmap);
 			break;
 		}
 
