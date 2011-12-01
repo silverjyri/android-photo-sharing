@@ -3,7 +3,6 @@ package ee.ut.cs.mobile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,6 +23,7 @@ public class PictureEditorActivity extends Activity {
 	Uri uri;
 	ImageView imageView;
 	Bitmap bitmap;
+	Bitmap oldBitmap;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +38,14 @@ public class PictureEditorActivity extends Activity {
 		
 		try {
 			bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+			oldBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
 		} catch (FileNotFoundException e) {
 			bitmap = null;
+			oldBitmap = null;
 			e.printStackTrace();
 		} catch (IOException e) {
 			bitmap = null;
+			oldBitmap = null;
 			e.printStackTrace();
 		}
 	}
@@ -76,6 +79,7 @@ public class PictureEditorActivity extends Activity {
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "Save");
+		menu.add(0, 2, 2, "Undo");
 	}
     
 	@Override
@@ -83,14 +87,23 @@ public class PictureEditorActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case 0:
+			oldBitmap = bitmap;
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
+		case 2:
+			Bitmap temp = bitmap;
+			bitmap = oldBitmap;
+			oldBitmap = temp;
+			temp = null;
+			imageView.setImageBitmap(bitmap);
+			break;
 		}
 
 		return true;
 	}
+	
 }
