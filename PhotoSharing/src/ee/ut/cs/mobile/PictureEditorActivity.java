@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
@@ -11,6 +12,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -24,6 +26,7 @@ public class PictureEditorActivity extends Activity {
 	ImageView imageView;
 	Bitmap bitmap;
 	Bitmap oldBitmap;
+	private ShakeListener mShaker;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,36 @@ public class PictureEditorActivity extends Activity {
 			oldBitmap = null;
 			e.printStackTrace();
 		}
+		
+		final Vibrator vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+		
+		mShaker = new ShakeListener(this);
+	    mShaker.setOnShakeListener(new ShakeListener.OnShakeListener () {
+	      public void onShake()
+	      {
+	        vibe.vibrate(100);
+	        Bitmap temp = bitmap;
+			bitmap = oldBitmap;
+			oldBitmap = temp;
+			temp = null;
+			imageView.setImageBitmap(bitmap);
+	      }
+	    });
+	    
 	}
+	
+	 @Override
+	  public void onResume()
+	  {
+	    mShaker.resume();
+	    super.onResume();
+	  }
+	  @Override
+	  public void onPause()
+	  {
+	    mShaker.pause();
+	    super.onPause();
+	  }
 	
 	@Override
 	public void onBackPressed() {
