@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
-import android.widget.ImageView;
 
 /**
  * A CameraSource implementation that obtains its bitmaps via an HTTP request

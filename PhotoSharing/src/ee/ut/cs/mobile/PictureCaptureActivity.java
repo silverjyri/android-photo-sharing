@@ -26,10 +26,10 @@ public class PictureCaptureActivity extends Activity {
         Bitmap bitmap = cameraSource.capture();
 		if (bitmap != null) {
 			captureView.setImageBitmap(bitmap);
-			
         	Uri data = getIntent().getData();
-        	
         	MediaManager.saveBitmapImage(bitmap, data, this);
+        	setResult(RESULT_OK, getIntent());
+        	finish();
         }
     }
 }

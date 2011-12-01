@@ -31,6 +31,10 @@
             android:label="@string/capture_name"
             android:name="PictureCaptureActivity">
         </activity>
+        <activity
+            android:label="@string/share_name"
+            android:name="ShareActivity">
+        </activity>
     </application>
 
 </manifest>

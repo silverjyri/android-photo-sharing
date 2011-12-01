@@ -1,14 +1,7 @@
 package ee.ut.cs.mobile;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -115,6 +107,9 @@ public class PhotoSharingActivity extends Activity {
 	        startActivityForResult(editorActivity, 0);
 			break;
 		case 1:
+			Intent shareActivity = new Intent(this, ShareActivity.class);
+			shareActivity.setData(item);
+	        startActivity(shareActivity);
 			break;
 		case 2:
 			pictures.remove(info.position);
@@ -139,8 +134,9 @@ public class PhotoSharingActivity extends Activity {
                 // Image captured and saved to fileUri specified in the Intent
                 Toast.makeText(this, "Image saved to:\n" +
                          data.getData(), Toast.LENGTH_LONG).show();
-                pictures.add(data.getData());
+                pictures.add(0, data.getData());
                 adapter.notifyDataSetChanged();
+                setNumPictures(pictures.size());
             } else if (resultCode == RESULT_CANCELED) {
             	Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             }
