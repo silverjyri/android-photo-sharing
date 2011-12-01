@@ -1,6 +1,7 @@
 package com.tomgibara.android.camera;
 
 import android.graphics.Bitmap;
+import android.view.SurfaceHolder;
 
 /**
  * Provides a simple abstraction for obtaining preview captures from a camera
@@ -56,6 +57,12 @@ public interface CameraSource {
 	 * @return true iff a frame was successfully written to the canvas
 	 */
 	
-	Bitmap capture();
+	void capture(CameraCallback callback);
+
+	public interface CameraCallback {
+		public void onPictureTaken(Bitmap bitmap);
+	}
 	
+	public void startPreview(SurfaceHolder holder);
+	public void stopPreview();
 }

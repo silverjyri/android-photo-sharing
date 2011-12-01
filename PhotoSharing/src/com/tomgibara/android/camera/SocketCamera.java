@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 /**
  * A CameraSource implementation that obtains its bitmaps via a TCP connection
@@ -52,8 +53,13 @@ public class SocketCamera implements CameraSource {
 	}
 
 
-	public Bitmap capture() {
-		Bitmap bitmap = null;
+	public void startPreview(SurfaceHolder holder) {
+	}
+	
+	public void stopPreview() {
+	}
+	
+	public void capture(CameraCallback callback) {
 		Socket socket = null;
 		try {
 			socket = new Socket();
@@ -63,7 +69,8 @@ public class SocketCamera implements CameraSource {
 
 			//obtain the bitmap
 			InputStream in = socket.getInputStream();
-			bitmap = BitmapFactory.decodeStream(in);
+			Bitmap bitmap = BitmapFactory.decodeStream(in);
+			callback.onPictureTaken(bitmap);
 
 		} catch (RuntimeException e) {
 			Log.i(LOG_TAG, "Failed to obtain image over network", e);
@@ -76,7 +83,6 @@ public class SocketCamera implements CameraSource {
 				/* ignore */
 			}
 		}
-		return bitmap;
 	}
 
 	public void close() {

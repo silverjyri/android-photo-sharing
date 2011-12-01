@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 /**
  * A CameraSource implementation that obtains its bitmaps via an HTTP request
@@ -51,7 +52,13 @@ public class HttpCamera implements CameraSource {
 		return true;
 	}
 
-	public Bitmap capture() {
+	public void startPreview(SurfaceHolder holder) {
+	}
+	
+	public void stopPreview() {
+	}
+	
+	public void capture(CameraCallback callback) {
 		Bitmap bitmap = null;
 		try {
 			InputStream in = null;
@@ -77,6 +84,7 @@ public class HttpCamera implements CameraSource {
 				} else {
 					Log.d("HttpCamera", "HTTP result: " + response);
 				}
+				callback.onPictureTaken(bitmap);
 			} finally {
 				if (in != null) try {
 					in.close();
@@ -92,7 +100,6 @@ public class HttpCamera implements CameraSource {
 		} catch (IOException e) {
 			Log.i(LOG_TAG, "Failed to obtain image over network", e);
 		}
-		return bitmap;
 	}
 
 	public void close() {
