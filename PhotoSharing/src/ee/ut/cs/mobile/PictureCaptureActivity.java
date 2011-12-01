@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.tomgibara.android.camera.CameraSource;
+import com.tomgibara.android.camera.GenuineCamera;
 import com.tomgibara.android.camera.HttpCamera;
 
 public class PictureCaptureActivity extends Activity {
@@ -19,9 +20,9 @@ public class PictureCaptureActivity extends Activity {
         ImageView captureView = (ImageView) findViewById(R.id.captureImageView);
 
         //cameraSource = new SocketCamera("192.168.1.75", 8082, surfaceView.getWidth(), surfaceView.getHeight(), true);
-        //cameraSource = new GenuineCamera(surfaceView.getWidth(), surfaceView.getHeight());
+        cameraSource = new GenuineCamera(captureView.getWidth(), captureView.getHeight());
         //cameraSource = new HttpCamera("http://192.168.1.75:8888", surfaceView.getWidth(), surfaceView.getHeight(), true);
-        cameraSource = new HttpCamera("http://anthrax11.homeip.net:8888/out.jpg", captureView.getWidth(), captureView.getHeight());
+        //cameraSource = new HttpCamera("http://anthrax11.homeip.net:8888/out.jpg", captureView.getWidth(), captureView.getHeight());
 
         Bitmap bitmap = cameraSource.capture();
 		if (bitmap != null) {
