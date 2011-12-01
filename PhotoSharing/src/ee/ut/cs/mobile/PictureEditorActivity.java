@@ -28,6 +28,7 @@ public class PictureEditorActivity extends Activity {
 	Bitmap bitmap;
 	Bitmap oldBitmap;
 	private ShakeListener mShaker;
+	Bitmap bMapRotate;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class PictureEditorActivity extends Activity {
 	      {
 	        vibe.vibrate(100);
 	        Bitmap temp = bitmap;
+	        bitmap = null;
 			bitmap = oldBitmap;
 			oldBitmap = temp;
 			temp = null;
@@ -105,6 +107,16 @@ public class PictureEditorActivity extends Activity {
 	    c.drawBitmap(bmpOriginal, 0, 0, paint);
 	    return bmpGrayscale;
 	}
+	
+	public Bitmap toRotate(Bitmap bmpOriginal)
+	{
+		bMapRotate = null;
+        Matrix mat = new Matrix();
+        mat.postRotate(90);
+        bMapRotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
+        return bMapRotate;
+        
+	}
 
 
 	@Override
@@ -113,7 +125,7 @@ public class PictureEditorActivity extends Activity {
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "Rotate 90CW");
 		menu.add(0, 2, 2, "Save");
-//		menu.add(0, 2, 2, "Undo");
+//		menu.add(0, 3, 3, "Undo");
 	}
     
 	@Override
@@ -121,20 +133,20 @@ public class PictureEditorActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case 0:
+			oldBitmap = null;
 			oldBitmap = bitmap;
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
+			oldBitmap = null;
 			oldBitmap = bitmap;
-			Matrix mat = new Matrix();
-	        mat.postRotate(90);
-	        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
+	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
 		case 2:
-			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".jpg", this);
+			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
-//		case 2:
+//		case 3:
 //			Bitmap temp = bitmap;
 //			bitmap = oldBitmap;
 //			oldBitmap = temp;
