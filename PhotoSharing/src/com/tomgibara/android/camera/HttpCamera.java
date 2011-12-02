@@ -30,6 +30,7 @@ public class HttpCamera implements CameraSource {
 	
 	private final String url;
 	private final Paint paint = new Paint();
+	Timer previewTimer;
 
 	public HttpCamera(String url) {
 		this.url = url;
@@ -44,7 +45,9 @@ public class HttpCamera implements CameraSource {
 	}
 
 	public void startPreview(final SurfaceHolder holder) {
-		new Timer().scheduleAtFixedRate(new TimerTask() {
+		stopPreview();
+		previewTimer = new Timer();
+		previewTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				capture(new CameraCallback() {
@@ -60,6 +63,10 @@ public class HttpCamera implements CameraSource {
 	}
 	
 	public void stopPreview() {
+		if (previewTimer != null) {
+			previewTimer.cancel();
+			previewTimer = null;
+		}
 	}
 	
 	public void capture(CameraCallback callback) {
