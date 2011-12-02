@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +25,6 @@ import android.view.SurfaceHolder;
 
 public class HttpCamera implements CameraSource {
 
-	
 	private static final int CONNECT_TIMEOUT = 1000;
 	private static final int SOCKET_TIMEOUT = 1000;
 	
@@ -43,13 +44,19 @@ public class HttpCamera implements CameraSource {
 	}
 
 	public void startPreview(final SurfaceHolder holder) {
-		capture(new CameraCallback() {
-			public void onPictureTaken(Bitmap bitmap) {
-				Canvas canvas = holder.lockCanvas();
-				canvas.drawBitmap(bitmap, 0, 0, paint);
-				holder.unlockCanvasAndPost(canvas);
+		new Timer().scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				capture(new CameraCallback() {
+					public void onPictureTaken(Bitmap bitmap) {
+						Canvas canvas = holder.lockCanvas();
+						canvas.drawBitmap(bitmap, 0, 0, paint);
+						holder.unlockCanvasAndPost(canvas);
+					}
+				});
 			}
-		});
+			
+		}, 0, 3000);
 	}
 	
 	public void stopPreview() {
