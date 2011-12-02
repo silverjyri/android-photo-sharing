@@ -19,7 +19,6 @@ public class ShakeListener implements SensorEventListener
   private float mLastX=-1.0f, mLastY=-1.0f, mLastZ=-1.0f;
   private long mLastTime;
   private OnShakeListener mShakeListener;
-  private Context mContext;
   private int mShakeCount = 0;
   private long mLastShake;
   private long mLastForce;
@@ -29,20 +28,32 @@ public class ShakeListener implements SensorEventListener
     public void onShake();
   }
 
-  public ShakeListener(Context context) 
+  // This will return null if sensors are not supported
+	public static ShakeListener Create(Context context) {
+		SensorManager sensorMgr = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+		if (sensorMgr == null) {
+			Log.d("ShakeListener", "Sensors not supported");
+			return null;
+		}
+		Sensor sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		if (sensor == null) {
+			Log.d("ShakeListener", "Accelerometer not supported");
+			return null;
+		}
+		ShakeListener shakeListener =  new ShakeListener(sensorMgr, sensor);
+	    try {
+	    	shakeListener.resume();
+	    } catch (UnsupportedOperationException e) {
+	    	Log.d("ShakeListener", e.getMessage());
+	    	return null;
+	    }
+	    return shakeListener;
+	}
+  
+  private ShakeListener(SensorManager sensorMgr, Sensor sensor) 
   { 
-    mContext = context;
-    mSensorMgr = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
-    if (mSensorMgr == null) {
-    	Log.d("ShakeListener", "Sensors not supported");
-    	return;
-    }
-    mSensor = mSensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    try {
-    	resume();
-    } catch (UnsupportedOperationException e) {
-    	Log.d("ShakeListener", e.getMessage());
-    }
+    mSensorMgr = sensorMgr;
+    mSensor = sensor;
   }
 
   public void setOnShakeListener(OnShakeListener listener)

@@ -2,6 +2,7 @@ package ee.ut.cs.mobile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import android.app.Activity;
 import android.content.Context;
@@ -23,63 +24,61 @@ import android.widget.ImageView;
 
 public class PictureEditorActivity extends Activity {
 	
-	Uri uri;
-	ImageView imageView;
-	Bitmap bitmap;
-	Bitmap oldBitmap;
+	private Uri uri;
+	private ImageView imageView;
+	private Bitmap bitmap = null;
+	private ArrayList<Bitmap> undoList = new ArrayList<Bitmap>();
 	private ShakeListener mShaker;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editor);
-		
+
 		uri = getIntent().getData();
+		try {
+			bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		imageView = (ImageView) findViewById(R.id.editorImageView);
-		imageView.setImageURI(uri);
+		imageView.setImageBitmap(bitmap);
 		registerForContextMenu(imageView);
 		imageView.setClickable(true);
 		
-		try {
-			bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-			oldBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-		} catch (FileNotFoundException e) {
-			bitmap = null;
-			oldBitmap = null;
-			e.printStackTrace();
-		} catch (IOException e) {
-			bitmap = null;
-			oldBitmap = null;
-			e.printStackTrace();
-		}
 		
 		final Vibrator vibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 		
-		mShaker = new ShakeListener(this);
-	    mShaker.setOnShakeListener(new ShakeListener.OnShakeListener () {
-	      public void onShake()
-	      {
-	        vibe.vibrate(100);
-	        Bitmap temp = bitmap;
-	        bitmap = null;
-			bitmap = oldBitmap;
-			oldBitmap = temp;
-			temp = null;
-			imageView.setImageBitmap(bitmap);
-	      }
-	    });
-	    
+		mShaker = ShakeListener.Create(this);
+		if (mShaker == null) {
+			return;
+		}
+		mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
+			public void onShake() {
+				vibe.vibrate(100);
+				undo();
+			}
+		});
+	}
+	
+	private void undo() {
+		if (undoList.size() == 0) {
+			return;
+		}
+		bitmap.recycle();
+		bitmap = undoList.get(0);
+		undoList.remove(0);
+		imageView.setImageBitmap(bitmap);
 	}
 	
 	 @Override
 	  public void onResume()
 	  {
 		 if (mShaker != null) {
-			 try {
-				 mShaker.resume();
-			 } catch (UnsupportedOperationException e) {
-				 mShaker = null;
-			 }
+			 mShaker.resume();
 		 }
 	    super.onResume();
 	  }
@@ -137,12 +136,12 @@ public class PictureEditorActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case 0:
-			oldBitmap = bitmap;
+			undoList.add(0, bitmap);
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
-			oldBitmap = bitmap;
+			undoList.add(0, bitmap);
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
 	        break;
