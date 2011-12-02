@@ -8,8 +8,8 @@ import java.net.URLConnection;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -28,23 +28,13 @@ public class HttpCamera implements CameraSource {
 	private static final int SOCKET_TIMEOUT = 1000;
 	
 	private final String url;
-	private final Rect bounds;
 	private final Paint paint = new Paint();
 
-	public HttpCamera(String url, int width, int height) {
+	public HttpCamera(String url) {
 		this.url = url;
-		bounds = new Rect(0, 0, width, height);
 		
 		paint.setFilterBitmap(true);
 		paint.setAntiAlias(true);
-	}
-	
-	public int getWidth() {
-		return bounds.right;
-	}
-	
-	public int getHeight() {
-		return bounds.bottom;
 	}
 	
 	public boolean open() {
@@ -52,7 +42,14 @@ public class HttpCamera implements CameraSource {
 		return true;
 	}
 
-	public void startPreview(SurfaceHolder holder) {
+	public void startPreview(final SurfaceHolder holder) {
+		capture(new CameraCallback() {
+			public void onPictureTaken(Bitmap bitmap) {
+				Canvas canvas = holder.lockCanvas();
+				canvas.drawBitmap(bitmap, 0, 0, paint);
+				holder.unlockCanvasAndPost(canvas);
+			}
+		});
 	}
 	
 	public void stopPreview() {

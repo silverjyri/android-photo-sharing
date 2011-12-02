@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -21,20 +20,9 @@ import android.view.SurfaceHolder;
 
 public class GenuineCamera implements CameraSource {
 
-	private int width;
-	private int height;
-	
 	private Camera device = null;
 	
 	public GenuineCamera() {
-	}
-	
-	public int getWidth() {
-		return width;
-	}
-	
-	public int getHeight() {
-		return height;
 	}
 	
 	public boolean open() {
@@ -78,18 +66,11 @@ public class GenuineCamera implements CameraSource {
 			Camera.Parameters params = device.getParameters();
 			Camera.Size previewSize = getBestPreviewSize(rect.width(), rect.height(), params);
 			Camera.Size pictureSize = getBestPictureSize(rect.width(), rect.height(), params);
-			if (previewSize != null) {
-				width = previewSize.width;
-				height = previewSize.height;
-				Log.d(LOG_TAG, Integer.toString(previewSize.width) + "xx" + Integer.toString(previewSize.height));
-			} else {
+			if (previewSize == null) {
 				Log.d(LOG_TAG, "No best preview size found");
-				int newWidth = (width > 1024) ? 1024 : width;
-				height = (int)((float)height * ((float)newWidth / (float)width));
-				width = newWidth;
+				return;
 			}
-			//params.setPictureSize(width, height);
-			params.setPreviewSize(width, height);
+			params.setPreviewSize(previewSize.width, previewSize.height);
 			params.setPictureSize(pictureSize.width, pictureSize.height);
 			device.setParameters(params);
 			
@@ -114,8 +95,6 @@ public class GenuineCamera implements CameraSource {
 	private Camera.Size getBestPreviewSize(int width, int height,
 			Camera.Parameters parameters) {
 		Camera.Size result = null;
-
-		Log.d(LOG_TAG, Integer.toString(width) + "x" + Integer.toString(height));
 		
 		for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
 			if (size.width <= width && size.height <= height) {
@@ -138,8 +117,6 @@ public class GenuineCamera implements CameraSource {
 	private Camera.Size getBestPictureSize(int width, int height,
 			Camera.Parameters parameters) {
 		Camera.Size result = null;
-
-		Log.d(LOG_TAG, Integer.toString(width) + "x" + Integer.toString(height));
 		
 		for (Camera.Size size : parameters.getSupportedPictureSizes()) {
 			if (size.width <= width && size.height <= height) {

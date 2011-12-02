@@ -33,22 +33,6 @@ public interface CameraSource {
 	void close();
 	
 	/**
-	 * The width of the captured image.
-	 * 
-	 * @return the width of the capture in pixels
-	 */
-	
-	int getWidth();
-	
-	/**
-	 * The height of the captured image.
-	 * 
-	 * @return the height of the capture in pixels
-	 */
-	
-	int getHeight();
-	
-	/**
 	 * Attempts to render the current camera.
 	 * The capture will be rendered into the rectangle (0,0,width,height).
 	 * Outstanding transformations on the canvas may alter this.

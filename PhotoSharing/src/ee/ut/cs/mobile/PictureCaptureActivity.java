@@ -2,8 +2,12 @@ package ee.ut.cs.mobile;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -11,6 +15,7 @@ import android.view.SurfaceView;
 import com.tomgibara.android.camera.CameraSource;
 import com.tomgibara.android.camera.CameraSource.CameraCallback;
 import com.tomgibara.android.camera.GenuineCamera;
+import com.tomgibara.android.camera.HttpCamera;
 
 public class PictureCaptureActivity extends Activity implements SurfaceHolder.Callback, CameraCallback {
 	CameraSource cameraSource;
@@ -51,14 +56,27 @@ public class PictureCaptureActivity extends Activity implements SurfaceHolder.Ca
 
         //cameraSource = new SocketCamera("192.168.1.75", 8082, surfaceView.getWidth(), surfaceView.getHeight(), true);
         cameraSource = new GenuineCamera();
-        //cameraSource = new HttpCamera("http://192.168.1.75:8888", surfaceView.getWidth(), surfaceView.getHeight(), true);
-        //cameraSource = new HttpCamera("http://anthrax11.homeip.net:8888/out.jpg", captureView.getWidth(), captureView.getHeight());
         
-        if (cameraSource.open()) {
+        boolean cameraOk = false;
+        if (Camera.getNumberOfCameras() > 1) {
+        	cameraOk = cameraSource.open();
+        }
+        
+        // Fallback to HttpCamera if genuine camera failed
+        if (!cameraOk) {
+        	cameraSource.close();
+        	//cameraSource = new HttpCamera("http://anthrax11.homeip.net:8888/out.jpg");
+        	cameraSource = new HttpCamera("http://lv.raad.tartu.ee:10201/axis-cgi/jpg/image.cgi?resolution=320x240&rand=1301134");
+        	cameraOk = cameraSource.open();
+        }
+        
+        if (cameraOk) {
             captureView = (SurfaceView) findViewById(R.id.captureSurfaceView);
         	SurfaceHolder holder = captureView.getHolder();
         	holder.addCallback(this);
-            holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        	if (cameraSource instanceof GenuineCamera) {
+        		holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        	}
         }
     }
 
