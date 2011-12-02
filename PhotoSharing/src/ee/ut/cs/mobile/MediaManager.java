@@ -27,14 +27,12 @@ public class MediaManager {
         // between applications and persist after your app has been uninstalled.
     	return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 	}
-	
-	private static File getApplicationStoragePath(Context context) {
-		return new File(context.getApplicationContext().getFilesDir() + "/images");
-	}
-	
+
     public static File getImageStoragePath(Context context) {
     	return getExternalStoragePath();
-    	//return getApplicationStoragePath(context);
+
+    	// Internal storage location
+    	//return new File(context.getApplicationContext().getFilesDir() + "/images");
     }
 	
     /** Create a File for saving an image or video */

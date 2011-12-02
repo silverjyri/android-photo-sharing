@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 public class PhotoSharingActivity extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	private static final int EDIT_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+	private static final int EDIT_IMAGE_ACTIVITY_REQUEST_CODE = 101;
 	
 	ArrayList<Uri> pictures = new ArrayList<Uri>();
 	PictureListAdapter adapter;
@@ -104,7 +104,7 @@ public class PhotoSharingActivity extends Activity {
 		case 0:
 			Intent editorActivity = new Intent(this, PictureEditorActivity.class);
 			editorActivity.setData(item);
-	        startActivityForResult(editorActivity, 0);
+	        startActivityForResult(editorActivity, EDIT_IMAGE_ACTIVITY_REQUEST_CODE);
 			break;
 		case 1:
 			Intent shareActivity = new Intent(this, ShareActivity.class);

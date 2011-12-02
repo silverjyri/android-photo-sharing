@@ -49,14 +49,13 @@ public class PictureCaptureActivity extends Activity implements SurfaceHolder.Ca
         super.onCreate(savedInstanceState);
         setContentView(R.layout.capture);
 
-        captureView = (SurfaceView) findViewById(R.id.captureSurfaceView);
-
         //cameraSource = new SocketCamera("192.168.1.75", 8082, surfaceView.getWidth(), surfaceView.getHeight(), true);
-        cameraSource = new GenuineCamera(captureView.getWidth(), captureView.getHeight());
+        cameraSource = new GenuineCamera();
         //cameraSource = new HttpCamera("http://192.168.1.75:8888", surfaceView.getWidth(), surfaceView.getHeight(), true);
         //cameraSource = new HttpCamera("http://anthrax11.homeip.net:8888/out.jpg", captureView.getWidth(), captureView.getHeight());
         
         if (cameraSource.open()) {
+            captureView = (SurfaceView) findViewById(R.id.captureSurfaceView);
         	SurfaceHolder holder = captureView.getHolder();
         	holder.addCallback(this);
             holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -68,6 +67,7 @@ public class PictureCaptureActivity extends Activity implements SurfaceHolder.Ca
 
 	public void surfaceCreated(SurfaceHolder holder) {
        	cameraSource.startPreview(holder);
+    	holder.removeCallback(this);
 	}
 
 	public void surfaceDestroyed(SurfaceHolder arg0) {

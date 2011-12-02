@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.util.Log;
@@ -19,14 +21,12 @@ import android.view.SurfaceHolder;
 
 public class GenuineCamera implements CameraSource {
 
-	private final int width;
-	private final int height;
+	private int width;
+	private int height;
 	
 	private Camera device = null;
 	
-	public GenuineCamera(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public GenuineCamera() {
 	}
 	
 	public int getWidth() {
@@ -42,11 +42,6 @@ public class GenuineCamera implements CameraSource {
 		device = Camera.open();
 		if (device == null) return false;
 	
-		Camera.Parameters params = device.getParameters();
-		//params.setPictureSize(width, height);
-		//params.setPreviewSize(width, height);
-		device.setParameters(params);
-		
 		return true;
 	}
 	
@@ -78,6 +73,26 @@ public class GenuineCamera implements CameraSource {
 	
 	public void startPreview(SurfaceHolder holder) {
 		try {
+			Rect rect = holder.getSurfaceFrame();
+			
+			Camera.Parameters params = device.getParameters();
+			Camera.Size previewSize = getBestPreviewSize(rect.width(), rect.height(), params);
+			Camera.Size pictureSize = getBestPictureSize(rect.width(), rect.height(), params);
+			if (previewSize != null) {
+				width = previewSize.width;
+				height = previewSize.height;
+				Log.d(LOG_TAG, Integer.toString(previewSize.width) + "xx" + Integer.toString(previewSize.height));
+			} else {
+				Log.d(LOG_TAG, "No best preview size found");
+				int newWidth = (width > 1024) ? 1024 : width;
+				height = (int)((float)height * ((float)newWidth / (float)width));
+				width = newWidth;
+			}
+			//params.setPictureSize(width, height);
+			params.setPreviewSize(width, height);
+			params.setPictureSize(pictureSize.width, pictureSize.height);
+			device.setParameters(params);
+			
 			device.setPreviewDisplay(holder);
 			device.startPreview();
 		} catch (IOException e) {
@@ -96,6 +111,51 @@ public class GenuineCamera implements CameraSource {
 		device.takePicture(null, null, pcb);
 	}
 
+	private Camera.Size getBestPreviewSize(int width, int height,
+			Camera.Parameters parameters) {
+		Camera.Size result = null;
 
+		Log.d(LOG_TAG, Integer.toString(width) + "x" + Integer.toString(height));
+		
+		for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+			if (size.width <= width && size.height <= height) {
+				if (result == null) {
+					result = size;
+				} else {
+					int resultArea = result.width * result.height;
+					int newArea = size.width * size.height;
 
+					if (newArea > resultArea) {
+						result = size;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+	
+	private Camera.Size getBestPictureSize(int width, int height,
+			Camera.Parameters parameters) {
+		Camera.Size result = null;
+
+		Log.d(LOG_TAG, Integer.toString(width) + "x" + Integer.toString(height));
+		
+		for (Camera.Size size : parameters.getSupportedPictureSizes()) {
+			if (size.width <= width && size.height <= height) {
+				if (result == null) {
+					result = size;
+				} else {
+					int resultArea = result.width * result.height;
+					int newArea = size.width * size.height;
+
+					if (newArea > resultArea) {
+						result = size;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
 }

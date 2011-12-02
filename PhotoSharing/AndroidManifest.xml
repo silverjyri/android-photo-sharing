@@ -31,7 +31,8 @@
         </activity>
         <activity
             android:label="@string/capture_name"
-            android:name="PictureCaptureActivity">
+            android:name="PictureCaptureActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:label="@string/share_name"
