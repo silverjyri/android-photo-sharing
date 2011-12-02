@@ -70,7 +70,7 @@ public class MediaManager {
         OutputStream os;
 		try {
 			os = new BufferedOutputStream(new FileOutputStream(uri.getPath(), true));
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);
 	        os.flush();
 	        os.close();
 		} catch (FileNotFoundException e) {
