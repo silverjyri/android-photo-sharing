@@ -75,14 +75,22 @@ public class PictureEditorActivity extends Activity {
 	 @Override
 	  public void onResume()
 	  {
-	    mShaker.resume();
+		 if (mShaker != null) {
+			 try {
+				 mShaker.resume();
+			 } catch (UnsupportedOperationException e) {
+				 mShaker = null;
+			 }
+		 }
 	    super.onResume();
 	  }
 	  @Override
 	  public void onPause()
 	  {
-	    mShaker.pause();
-	    super.onPause();
+		  if (mShaker != null) {
+			  mShaker.pause();
+		  }
+		  super.onPause();
 	  }
 	
 	@Override

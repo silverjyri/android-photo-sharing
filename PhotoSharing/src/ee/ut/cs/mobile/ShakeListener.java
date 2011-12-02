@@ -1,6 +1,7 @@
 package ee.ut.cs.mobile;
 import android.hardware.SensorListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.content.Context;
 import java.lang.UnsupportedOperationException;
 
@@ -29,7 +30,11 @@ public class ShakeListener implements SensorListener
   public ShakeListener(Context context) 
   { 
     mContext = context;
-    resume();
+    try {
+    	resume();
+    } catch (UnsupportedOperationException e) {
+    	Log.d("ShakeListener", e.getMessage());
+    }
   }
 
   public void setOnShakeListener(OnShakeListener listener)

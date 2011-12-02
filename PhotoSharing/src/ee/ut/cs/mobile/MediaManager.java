@@ -29,10 +29,12 @@ public class MediaManager {
 	}
 
     public static File getImageStoragePath(Context context) {
-    	return getExternalStoragePath();
-
-    	// Internal storage location
-    	//return new File(context.getApplicationContext().getFilesDir() + "/images");
+    	File path = getExternalStoragePath();
+    	if (path == null) {
+    		//Internal storage location
+    		return new File(context.getApplicationContext().getFilesDir() + "/images");
+    	}
+    	return path;
     }
 	
     /** Create a File for saving an image or video */
