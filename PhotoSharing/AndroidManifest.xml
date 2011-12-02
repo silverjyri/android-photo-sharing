@@ -32,7 +32,7 @@
         <activity
             android:label="@string/capture_name"
             android:name="PictureCaptureActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="landscape">
         </activity>
         <activity
             android:label="@string/share_name"

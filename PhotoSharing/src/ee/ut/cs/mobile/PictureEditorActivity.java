@@ -133,16 +133,15 @@ public class PictureEditorActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case 0:
-			oldBitmap = null;
 			oldBitmap = bitmap;
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
-			oldBitmap = null;
 			oldBitmap = bitmap;
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
+	        break;
 		case 2:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
