@@ -28,7 +28,6 @@ public class PictureEditorActivity extends Activity {
 	Bitmap bitmap;
 	Bitmap oldBitmap;
 	private ShakeListener mShaker;
-	Bitmap bMapRotate;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,14 +115,11 @@ public class PictureEditorActivity extends Activity {
 	    return bmpGrayscale;
 	}
 	
-	public Bitmap toRotate(Bitmap bmpOriginal)
+	public static Bitmap toRotate(Bitmap bmpOriginal)
 	{
-		bMapRotate = null;
         Matrix mat = new Matrix();
         mat.postRotate(90);
-        bMapRotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mat, true);
-        return bMapRotate;
-        
+        return Bitmap.createBitmap(bmpOriginal, 0, 0, bmpOriginal.getWidth(), bmpOriginal.getHeight(), mat, true);
 	}
 
 

@@ -1,6 +1,7 @@
 package ee.ut.cs.mobile;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.Window;
 
 import com.tomgibara.android.camera.CameraSource;
 import com.tomgibara.android.camera.CameraSource.CameraCallback;
