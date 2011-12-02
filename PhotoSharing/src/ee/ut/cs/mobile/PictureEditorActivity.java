@@ -128,7 +128,7 @@ public class PictureEditorActivity extends Activity {
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "Rotate 90CW");
 		menu.add(0, 2, 2, "Save");
-//		menu.add(0, 3, 3, "Undo");
+		menu.add(0, 3, 3, "Undo");
 	}
     
 	@Override
@@ -148,13 +148,9 @@ public class PictureEditorActivity extends Activity {
 		case 2:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
-//		case 3:
-//			Bitmap temp = bitmap;
-//			bitmap = oldBitmap;
-//			oldBitmap = temp;
-//			temp = null;
-//			imageView.setImageBitmap(bitmap);
-//			break;
+		case 3:
+			undo();
+			break;
 		}
 
 		return true;
