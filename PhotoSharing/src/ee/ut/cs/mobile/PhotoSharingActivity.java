@@ -2,7 +2,6 @@ package ee.ut.cs.mobile;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +35,10 @@ public class PhotoSharingActivity extends Activity {
         
         Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
         final Context context = this;
+        
+        final ShareActivity share = new ShareActivity();
+
+        Button receivePictureButton = (Button) findViewById(R.id.recvButton);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View arg0) {
@@ -52,6 +55,11 @@ public class PhotoSharingActivity extends Activity {
 	            // start the image capture Intent
 	            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 	            */
+			}
+		});
+        receivePictureButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+		        share.ensureDiscoverable();
 			}
 		});
 
