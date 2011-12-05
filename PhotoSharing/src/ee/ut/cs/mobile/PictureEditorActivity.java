@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
@@ -114,6 +115,48 @@ public class PictureEditorActivity extends Activity {
 	    return bmpGrayscale;
 	}
 	
+	Bitmap toSephia(Bitmap bmpOriginal) {
+		
+		int width, height, r,g, b, c, gry; 
+		height = bmpOriginal.getHeight(); 
+		width = bmpOriginal.getWidth(); 
+		int depth = 20;
+		
+		Bitmap bmpSephia = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	    Canvas canvas = new Canvas(bmpSephia);
+	    Paint paint = new Paint();
+	    ColorMatrix cm = new ColorMatrix();
+	    cm.setScale(.3f, .3f, .3f, 1.0f);   
+	    ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+	    paint.setColorFilter(f);
+	    canvas.drawBitmap(bmpOriginal, 0, 0, paint);
+	    for(int x=0; x < width; x++) {
+	        for(int y=0; y < height; y++) {
+	            c = bmpOriginal.getPixel(x, y);
+
+	            r = Color.red(c);
+	            g = Color.green(c);
+	            b = Color.blue(c);
+
+	            gry = (r + g + b) / 3;
+	            r = g = b = gry;
+
+	            r = r + (depth * 2);
+	            g = g + depth;
+
+	            if(r > 255) {
+	              r = 255;
+	            }
+	            if(g > 255) {
+	              g = 255;
+	            }
+	            bmpSephia.setPixel(x, y, Color.rgb(r, g, b));
+	        }
+	    }      
+	    return bmpSephia;
+	}
+
+	
 	public static Bitmap toRotate(Bitmap bmpOriginal)
 	{
         Matrix mat = new Matrix();
@@ -126,9 +169,10 @@ public class PictureEditorActivity extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
-		menu.add(0, 1, 1, "Rotate 90CW");
-		menu.add(0, 2, 2, "Save");
-		menu.add(0, 3, 3, "Undo");
+		menu.add(0, 1, 1, "To Sephia");
+		menu.add(0, 2, 2, "Rotate 90CW");
+		menu.add(0, 3, 3, "Save");
+		menu.add(0, 4, 4, "Undo");
 	}
     
 	@Override
@@ -142,13 +186,18 @@ public class PictureEditorActivity extends Activity {
 			break;
 		case 1:
 			undoList.add(0, bitmap);
+			bitmap = toSephia(bitmap);
+			imageView.setImageBitmap(bitmap);
+			break;
+		case 2:
+			undoList.add(0, bitmap);
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
 	        break;
-		case 2:
+		case 3:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
-		case 3:
+		case 4:
 			undo();
 			break;
 		}
