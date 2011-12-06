@@ -23,6 +23,7 @@ import android.widget.Toast;
 public class PhotoSharingActivity extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int EDIT_IMAGE_ACTIVITY_REQUEST_CODE = 101;
+	private static final int ENABLE_BT_REQUEST_CODE = 102;
 	
 	ArrayList<Uri> pictures = new ArrayList<Uri>();
 	PictureListAdapter adapter;
@@ -42,10 +43,14 @@ public class PhotoSharingActivity extends Activity {
 			public void onClick(View arg0) {
 	            Uri fileUri = MediaManager.getOutputMediaFileUri(context); // create a file to save the image
 	            
+	            // Use CameraSource to capture images
 				Intent capture = new Intent(context, PictureCaptureActivity.class);
 				capture.setData(fileUri);
 		        startActivityForResult(capture, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-				/*
+
+		        /*
+	            // Use the default camera intent to capture images
+
 	            // create Intent to take a picture and return control to the calling application
 	            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 	            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
@@ -55,8 +60,16 @@ public class PhotoSharingActivity extends Activity {
 	            */
 			}
 		});
+        
+        final Activity activity = this;
         receivePictureButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				BluetoothManager.enable(activity, ENABLE_BT_REQUEST_CODE);
+				if (BluetoothManager.isEnabled()) {
+					BluetoothManager.ensureDiscoverable(activity);
+				}
+				
+				BluetoothManager.ensureDiscoverable(activity);
 			}
 		});
 
@@ -147,6 +160,8 @@ public class PhotoSharingActivity extends Activity {
             }
         } else if (requestCode == EDIT_IMAGE_ACTIVITY_REQUEST_CODE) {
         	readPicturesList();
+        } else if (requestCode == ENABLE_BT_REQUEST_CODE) {
+        	BluetoothManager.ensureDiscoverable(this);
         }
     }
 
