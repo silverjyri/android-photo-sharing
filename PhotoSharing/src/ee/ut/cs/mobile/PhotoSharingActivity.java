@@ -35,8 +35,6 @@ public class PhotoSharingActivity extends Activity {
         
         Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
         final Context context = this;
-        
-        final ShareActivity share = new ShareActivity();
 
         Button receivePictureButton = (Button) findViewById(R.id.recvButton);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +57,6 @@ public class PhotoSharingActivity extends Activity {
 		});
         receivePictureButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-		        share.ensureDiscoverable();
 			}
 		});
 
