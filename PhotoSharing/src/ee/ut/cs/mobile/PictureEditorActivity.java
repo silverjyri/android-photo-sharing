@@ -21,6 +21,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class PictureEditorActivity extends Activity {
@@ -242,11 +243,10 @@ public class PictureEditorActivity extends Activity {
 		menu.setHeaderTitle("Activities");
 		menu.add(0, 0, 0, "To Grayscale");
 		menu.add(0, 1, 1, "To Sephia");
-		menu.add(0, 2, 2, "Brighten up");
-		menu.add(0, 3, 3, "Darken up");
-		menu.add(0, 4, 4, "Rotate 90CW");
-		menu.add(0, 5, 5, "Save");
-		menu.add(0, 6, 6, "Undo");
+		menu.add(0, 2, 2, "Brightness");
+		menu.add(0, 3, 3, "Rotate 90CW");
+		menu.add(0, 4, 4, "Save");
+		menu.add(0, 5, 5, "Undo");
 	}
     
 	@Override
@@ -264,24 +264,38 @@ public class PictureEditorActivity extends Activity {
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 2:
-			undoList.add(0, bitmap);
-			bitmap = doBrightness(bitmap, 33);
+			setContentView(R.layout.brightness);
+			imageView = (ImageView) findViewById(R.id.brightnessImageView);
 			imageView.setImageBitmap(bitmap);
+			registerForContextMenu(imageView);
+			imageView.setClickable(true);
+			Button plusbutton = (Button) findViewById(R.id.plus);
+			plusbutton.setOnClickListener(new View.OnClickListener(){
+				public void onClick(View v) {
+					undoList.add(0, bitmap);
+					bitmap = doBrightness(bitmap, 33);
+					imageView.setImageBitmap(bitmap);
+				}
+			});
+			
+			Button minusbutton = (Button) findViewById(R.id.minus);
+			minusbutton.setOnClickListener(new View.OnClickListener(){
+				public void onClick(View v) {
+					undoList.add(0,bitmap);
+					bitmap = doDarkness(bitmap, 33);
+					imageView.setImageBitmap(bitmap);
+				}
+			});
 			break;
 		case 3:
-			undoList.add(0,bitmap);
-			bitmap = doDarkness(bitmap, 33);
-			imageView.setImageBitmap(bitmap);
-			break;
-		case 4:
 			undoList.add(0, bitmap);
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
 	        break;
-		case 5:
+		case 4:
 			MediaManager.saveBitmapImage(bitmap, "testImage" + Calendar.getInstance().getTimeInMillis() + ".png", this);
 			break;
-		case 6:
+		case 5:
 			undo();
 			break;
 		}
