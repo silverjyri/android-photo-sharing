@@ -120,9 +120,10 @@ public class PhotoSharingActivity extends Activity {
 	        startActivityForResult(editorActivity, EDIT_IMAGE_ACTIVITY_REQUEST_CODE);
 			break;
 		case 1:
-			Intent shareActivity = new Intent(this, ShareActivity.class);
-			shareActivity.setData(item);
-	        startActivity(shareActivity);
+			Intent share = new Intent(Intent.ACTION_SEND);
+			share.setType("text/html");
+			share.putExtra(Intent.EXTRA_STREAM, item);
+			startActivity(Intent.createChooser(share, "Send" + item.toString()));
 			break;
 		case 2:
 			pictures.remove(info.position);
