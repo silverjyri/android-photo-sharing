@@ -23,8 +23,8 @@ public class ShareActivity extends Activity {
 
 	private static final int REQUEST_ENABLE_BT = 100;
 
-	private ArrayList<String> items = new ArrayList<String>();
-	private ArrayAdapter<String> itemAdapter;
+	private ArrayList<BluetoothDeviceItem> items = new ArrayList<BluetoothDeviceItem>();
+	private ArrayAdapter<BluetoothDeviceItem> itemAdapter;
 
 	private BroadcastReceiver mReceiver;
 	
@@ -45,7 +45,7 @@ public class ShareActivity extends Activity {
 		}
 
 		ListView shareList = (ListView) findViewById(R.id.shareList);
-		itemAdapter = new ArrayAdapter<String>(this,
+		itemAdapter = new ArrayAdapter<BluetoothDeviceItem>(this,
 				android.R.layout.simple_list_item_1, items);
 		shareList.setAdapter(itemAdapter);
 		registerForContextMenu(shareList);
@@ -76,9 +76,8 @@ public class ShareActivity extends Activity {
 
 		// Loop through paired devices
 		for (BluetoothDevice device : pairedDevices) {
-			// Add the name and address to an array adapter to show in a
-			// ListView
-			itemAdapter.add(device.getName() + "\n" + device.getAddress());
+			// Add the device to an array adapter to show in a ListView
+			itemAdapter.add(new BluetoothDeviceItem(device));
 		}
 
 		scanProgress = (ProgressBar)findViewById(R.id.progressBar1);
@@ -107,13 +106,17 @@ public class ShareActivity extends Activity {
 					// Get the BluetoothDevice object from the Intent
 					BluetoothDevice device = intent
 							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-					// Add the name and address to an array adapter to show in a
-					// ListView
-					String deviceString = device.getName() + "\n"
-							+ device.getAddress();
-					if (!items.contains(deviceString)) {
-						itemAdapter.add(device.getName() + "\n"
-								+ device.getAddress());
+
+					// Add the device to an array adapter to show in a ListView
+					boolean exists = false;
+					for (BluetoothDeviceItem d : items) {
+						if (d.getDevice().getAddress().equals(device.getAddress())) {
+							exists = true;
+							break;
+						}
+					}
+					if (!exists) {
+						itemAdapter.add(new BluetoothDeviceItem(device));
 					}
 				}
 			}

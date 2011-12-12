@@ -2,11 +2,10 @@ package ee.ut.cs.mobile;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -79,10 +78,6 @@ public class PhotoSharingActivity extends Activity {
         registerForContextMenu(pictureList);
         pictureList.setClickable(true);
 
-
-        // Store a test image
-        Bitmap testImage = BitmapFactory.decodeResource(getResources(),R.drawable.test);
-        MediaManager.saveBitmapImage(testImage, "testImage.jpg", this);
 
 		readPicturesList();
     }
