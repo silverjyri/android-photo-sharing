@@ -23,6 +23,7 @@ public class ShareActivity extends Activity {
 
 	private static final int REQUEST_ENABLE_BT = 100;
 
+	private ListView shareList;
 	private ArrayList<BluetoothDeviceItem> items = new ArrayList<BluetoothDeviceItem>();
 	private ArrayAdapter<BluetoothDeviceItem> itemAdapter;
 
@@ -44,15 +45,17 @@ public class ShareActivity extends Activity {
 			return;
 		}
 
-		ListView shareList = (ListView) findViewById(R.id.shareList);
+		shareList = (ListView) findViewById(R.id.shareList);
 		itemAdapter = new ArrayAdapter<BluetoothDeviceItem>(this,
 				android.R.layout.simple_list_item_1, items);
 		shareList.setAdapter(itemAdapter);
 		registerForContextMenu(shareList);
 		shareList.setClickable(true);
 		shareList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View view, int position,
+					long id) {
+				stopDeviceSearch();
+				BluetoothDevice device = items.get(position).getDevice();
 			}
 		});
 
@@ -80,25 +83,7 @@ public class ShareActivity extends Activity {
 			itemAdapter.add(new BluetoothDeviceItem(device));
 		}
 
-		scanProgress = (ProgressBar)findViewById(R.id.progressBar1);
-		scanProgressTimerTask = new TimerTask() {
-			@Override
-			public void run() {
-				int progress = scanProgress.getProgress();
-				if (progress == scanProgress.getMax()){
-					findViewById(R.id.scanningText).setVisibility(View.GONE);
-					findViewById(R.id.progressBar1).setVisibility(View.GONE);
-				} else {
-					mHandler.postDelayed(scanProgressTimerTask, 100);
-					scanProgress.setProgress(progress + 1);
-				}
-			}
-		};
-		
-		mHandler.removeCallbacks(scanProgressTimerTask);
-        mHandler.postDelayed(scanProgressTimerTask, 100);
-		
-		BluetoothManager.startDeviceSearch(this, new BroadcastReceiver() {
+		mReceiver = new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
 				String action = intent.getAction();
 				// When discovery finds a device
@@ -120,7 +105,25 @@ public class ShareActivity extends Activity {
 					}
 				}
 			}
-		});
+		};
+		BluetoothManager.startDeviceSearch(this, mReceiver);
+		
+		scanProgress = (ProgressBar)findViewById(R.id.progressBar1);
+		scanProgressTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				int progress = scanProgress.getProgress();
+				if (progress == scanProgress.getMax()){
+					stopDeviceSearch();
+				} else {
+					mHandler.postDelayed(scanProgressTimerTask, 100);
+					scanProgress.setProgress(progress + 1);
+				}
+			}
+		};
+		
+		mHandler.removeCallbacks(scanProgressTimerTask);
+        mHandler.postDelayed(scanProgressTimerTask, 100);
 	}
 
 	@Override
@@ -133,11 +136,21 @@ public class ShareActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-	@Override
-	protected void onDestroy() {
+	private void stopDeviceSearch() {
+		findViewById(R.id.scanningText).setVisibility(View.GONE);
+		scanProgress.setVisibility(View.GONE);
+		scanProgress.setProgress(0);
+		
+		mHandler.removeCallbacks(scanProgressTimerTask);
 		if (mReceiver != null) {
 			BluetoothManager.stopDeviceSearch(this, mReceiver);
 		}
+		mReceiver = null;
+	}
+	
+	@Override
+	protected void onDestroy() {
+		stopDeviceSearch();
 		super.onDestroy();
 	}
 }
