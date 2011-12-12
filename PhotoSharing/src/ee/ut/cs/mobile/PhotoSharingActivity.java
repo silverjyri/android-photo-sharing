@@ -121,7 +121,7 @@ public class PhotoSharingActivity extends Activity {
 			break;
 		case 1:
 			Intent share = new Intent(Intent.ACTION_SEND);
-			share.setType("text/html");
+			share.setType("image/jpeg");
 			share.putExtra(Intent.EXTRA_STREAM, item);
 			startActivity(Intent.createChooser(share, "Send" + item.toString()));
 			break;
