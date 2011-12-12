@@ -2,6 +2,7 @@ package ee.ut.cs.mobile;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
@@ -9,11 +10,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class ShareActivity extends Activity {
@@ -24,6 +27,10 @@ public class ShareActivity extends Activity {
 	private ArrayAdapter<String> itemAdapter;
 
 	private BroadcastReceiver mReceiver;
+	
+	private ProgressBar scanProgress;
+	private TimerTask scanProgressTimerTask;
+	private Handler mHandler = new Handler();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +81,24 @@ public class ShareActivity extends Activity {
 			itemAdapter.add(device.getName() + "\n" + device.getAddress());
 		}
 
+		scanProgress = (ProgressBar)findViewById(R.id.progressBar1);
+		scanProgressTimerTask = new TimerTask() {
+			@Override
+			public void run() {
+				int progress = scanProgress.getProgress();
+				if (progress == scanProgress.getMax()){
+					findViewById(R.id.scanningText).setVisibility(View.GONE);
+					findViewById(R.id.progressBar1).setVisibility(View.GONE);
+				} else {
+					mHandler.postDelayed(scanProgressTimerTask, 100);
+					scanProgress.setProgress(progress + 1);
+				}
+			}
+		};
+		
+		mHandler.removeCallbacks(scanProgressTimerTask);
+        mHandler.postDelayed(scanProgressTimerTask, 100);
+		
 		BluetoothManager.startDeviceSearch(this, new BroadcastReceiver() {
 			public void onReceive(Context context, Intent intent) {
 				String action = intent.getAction();

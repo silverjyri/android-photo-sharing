@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ListView android:id="@+id/shareList"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/scanningText"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        android:text="@string/findingdevices" />
+    
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+    
+    <ListView android:id="@+id/shareList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
     
     <Button android:id="@+id/discoverable"
         android:layout_width="fill_parent"
@@ -16,4 +26,4 @@
         android:text="Receive Picture" 
         android:layout_below="@+id/shareList"  />
 
-</RelativeLayout>
+</LinearLayout>
