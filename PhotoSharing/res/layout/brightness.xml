@@ -3,25 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-        <ImageView android:id="@+id/brightnessImageView"
+
+    <ImageView
+        android:id="@+id/brightnessImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-        
-        <Button android:id="@+id/plus"
+
+    <Button
+        android:id="@+id/minus"
         android:layout_width="120px"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/brightnessmageView"
-        android:layout_marginLeft="100px"
-        android:layout_alignBaseline="@+id/minus"
-        android:layout_alignParentLeft="true"
-        android:background="@drawable/plus"/>     	
-     	<Button
-         android:id="@+id/minus"
-         android:layout_width="120px"
-         android:layout_height="wrap_content"
-         android:layout_below="@+id/brightnessImageView"
-         android:layout_alignParentRight="true"
-         android:layout_marginRight="100px" />
-     	
+        android:layout_height="50px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="75dp"
+        android:background="@drawable/minus" />
+
+    <Button
+        android:id="@+id/plus"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@+id/minus"
+        android:background="@drawable/plus" />
+
 </RelativeLayout>
