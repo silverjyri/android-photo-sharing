@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 import android.content.Context;
@@ -111,7 +113,19 @@ public class MediaManager {
     }
     
     public static File[] getPictureFiles(Context context) {
-		return getImageStoragePath(context).listFiles();
+    	File[] files = getImageStoragePath(context).listFiles();
+    	ArrayList<File> pictures = new ArrayList<File>();
+    	for (File p : files) {
+    		String fileName = p.getAbsolutePath();
+    		int mid= fileName.lastIndexOf(".");
+    		String ext = fileName.substring(mid+1,fileName.length());
+    		if (ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("gif")) {
+    			pictures.add(p);
+    		}
+    	}
+    	File[] picturesArray = new File[pictures.size()];
+    	pictures.toArray(picturesArray);
+    	return picturesArray;
     }
     
     public static void saveBitmapImage(Bitmap bitmap, Uri uri, Context context) {
