@@ -11,10 +11,10 @@
         android:text="Take Picture" />
 
     <Button
-        android:id="@+id/recvButton"
+        android:id="@+id/selectAlbum"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Receive Picture" />
+        android:text="@string/selectAlbum" />
 
     <TextView android:id="@+id/imagesText"
         android:layout_width="wrap_content"

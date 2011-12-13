@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,8 +25,12 @@ public class PhotoSharingActivity extends Activity {
 	private static final int EDIT_IMAGE_ACTIVITY_REQUEST_CODE = 101;
 	private static final int ENABLE_BT_REQUEST_CODE = 102;
 	
-	ArrayList<Uri> pictures = new ArrayList<Uri>();
-	PictureListAdapter adapter;
+	private ArrayList<Uri> pictures = new ArrayList<Uri>();
+	private PictureListAdapter adapter;
+	private ListView pictureList;
+	
+	private Button selectAlbumButton;
+	private View contextMenuSource;
 	
     /** Called when the activity is first created. */
     @Override
@@ -33,10 +38,9 @@ public class PhotoSharingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
         final Context context = this;
 
-        Button receivePictureButton = (Button) findViewById(R.id.recvButton);
+        Button takePictureButton = (Button) findViewById(R.id.takePictureButton);
         takePictureButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View arg0) {
@@ -60,19 +64,15 @@ public class PhotoSharingActivity extends Activity {
 			}
 		});
         
-        final Activity activity = this;
-        receivePictureButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				BluetoothManager.enable(activity, ENABLE_BT_REQUEST_CODE);
-				if (BluetoothManager.isEnabled()) {
-					BluetoothManager.ensureDiscoverable(activity);
-				}
-				
-				BluetoothManager.ensureDiscoverable(activity);
+        selectAlbumButton = (Button) findViewById(R.id.selectAlbum);
+        selectAlbumButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View arg0) {
+		        registerForContextMenu(selectAlbumButton);
+				openContextMenu(selectAlbumButton);
 			}
-		});
+        });
 
-        ListView pictureList = (ListView) findViewById(R.id.pictureList);
+        pictureList = (ListView) findViewById(R.id.pictureList);
         adapter = new PictureListAdapter(this, R.layout.picturelistitem, R.id.textid, pictures);
         pictureList.setAdapter(adapter);
         registerForContextMenu(pictureList);
@@ -101,37 +101,51 @@ public class PhotoSharingActivity extends Activity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		menu.setHeaderTitle(pictures.get(info.position).toString());
-		menu.add(0, 0, 0, R.string.edittext);
-		menu.add(0, 1, 1, R.string.sendtext);
-		menu.add(0, 2, 2, R.string.deletetext);
+		contextMenuSource = v;
+		if (v == pictureList) {
+			menu.setHeaderTitle(pictures.get(info.position).toString());
+			menu.add(Menu.NONE, 0, 0, R.string.edittext);
+			menu.add(Menu.NONE, 1, 1, R.string.sendtext);
+			menu.add(Menu.NONE, 2, 2, R.string.deletetext);
+		} else if (v == selectAlbumButton) {
+			menu.setHeaderTitle(R.string.selectAlbum);
+			String[] albums = MediaManager.getAlbumList(this);
+			for (String s : albums) {
+				menu.add(s);
+			}
+		}
 	}
     
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
-		
-		Uri item = pictures.get(info.position);
-		
-		switch (menuItem.getItemId()) {
-		case 0:
-			Intent editorActivity = new Intent(this, PictureEditorActivity.class);
-			editorActivity.setData(item);
-	        startActivityForResult(editorActivity, EDIT_IMAGE_ACTIVITY_REQUEST_CODE);
-			break;
-		case 1:
-			Intent share = new Intent(Intent.ACTION_SEND);
-			share.setType("image/jpeg");
-			share.putExtra(Intent.EXTRA_STREAM, item);
-			startActivity(Intent.createChooser(share, "Send" + item.toString()));
-			break;
-		case 2:
-			pictures.remove(info.position);
-			adapter.notifyDataSetChanged();
-			setNumPictures(pictures.size());
-			File file = new File(item.getPath());
-			file.delete();
-			break;
+
+		if (contextMenuSource == pictureList) {
+			Uri item = pictures.get(info.position);
+			
+			switch (menuItem.getItemId()) {
+			case 0:
+				Intent editorActivity = new Intent(this, PictureEditorActivity.class);
+				editorActivity.setData(item);
+		        startActivityForResult(editorActivity, EDIT_IMAGE_ACTIVITY_REQUEST_CODE);
+				break;
+			case 1:
+				Intent share = new Intent(Intent.ACTION_SEND);
+				share.setType("image/jpeg");
+				share.putExtra(Intent.EXTRA_STREAM, item);
+				startActivity(Intent.createChooser(share, "Send" + item.toString()));
+				break;
+			case 2:
+				pictures.remove(info.position);
+				adapter.notifyDataSetChanged();
+				setNumPictures(pictures.size());
+				File file = new File(item.getPath());
+				file.delete();
+				break;
+			}
+		} else if (contextMenuSource == selectAlbumButton){
+			MediaManager.setCurrentStoragePath(new File(menuItem.toString()));
+			readPicturesList();
 		}
 
 		return true;

@@ -10,5 +10,6 @@
     <string name="capture_name">Image Capture</string>
     <string name="share_name">Share</string>
     <string name="findingdevices">Scanning for Bluetooth devices...</string>
+    <string name="selectAlbum">Select Album</string>
 
 </resources>
