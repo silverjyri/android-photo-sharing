@@ -23,7 +23,6 @@ import android.widget.Toast;
 public class PhotoSharingActivity extends Activity {
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int EDIT_IMAGE_ACTIVITY_REQUEST_CODE = 101;
-	private static final int ENABLE_BT_REQUEST_CODE = 102;
 	
 	private ArrayList<Uri> pictures = new ArrayList<Uri>();
 	private PictureListAdapter adapter;
@@ -170,8 +169,6 @@ public class PhotoSharingActivity extends Activity {
             }
         } else if (requestCode == EDIT_IMAGE_ACTIVITY_REQUEST_CODE) {
         	readPicturesList();
-        } else if (requestCode == ENABLE_BT_REQUEST_CODE) {
-        	BluetoothManager.ensureDiscoverable(this);
         }
     }
 

@@ -48,8 +48,6 @@ public class MediaManager {
     		return null;
     	}
 
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
     	return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 	}
     
@@ -59,9 +57,16 @@ public class MediaManager {
     		return null;
     	}
 
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
     	return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+	}
+	
+	private static File getExternalStorageBluetoothDownloadsPath() {
+    	if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+    		Log.d("PhotoSharing", "SD card not mounted! State: " + Environment.getExternalStorageState());
+    		return null;
+    	}
+
+    	return new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/downloads/bluetooth");
 	}
 	
 	private static File getInternalStoragePath(Context context) {
@@ -143,6 +148,11 @@ public class MediaManager {
     	}
     	
     	path = getExternalStorageDownloadsPath();
+    	if (path != null && path.exists()) {
+    		albums.add(path.getAbsolutePath());
+    	}
+    	
+    	path = getExternalStorageBluetoothDownloadsPath();
     	if (path != null && path.exists()) {
     		albums.add(path.getAbsolutePath());
     	}
