@@ -254,11 +254,20 @@ public class PictureEditorActivity extends Activity {
 
 		switch (menuItem.getItemId()) {
 		case 0:
+			setContentView(R.layout.editor);
+			imageView = (ImageView) findViewById(R.id.editorImageView);
+			imageView.setImageBitmap(bitmap);
+			registerForContextMenu(imageView);
+			imageView.setClickable(true);
 			undoList.add(0, bitmap);
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
+			setContentView(R.layout.editor);
+			imageView = (ImageView) findViewById(R.id.editorImageView);
+			imageView.setImageBitmap(bitmap);
+			registerForContextMenu(imageView);
 			undoList.add(0, bitmap);
 			bitmap = toSephia(bitmap);
 			imageView.setImageBitmap(bitmap);
@@ -288,6 +297,10 @@ public class PictureEditorActivity extends Activity {
 			});
 			break;
 		case 3:
+			setContentView(R.layout.editor);
+			imageView = (ImageView) findViewById(R.id.editorImageView);
+			imageView.setImageBitmap(bitmap);
+			registerForContextMenu(imageView);
 			undoList.add(0, bitmap);
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
