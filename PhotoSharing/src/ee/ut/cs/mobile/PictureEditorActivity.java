@@ -31,6 +31,7 @@ public class PictureEditorActivity extends Activity {
 	private Bitmap bitmap = null;
 	private ArrayList<Bitmap> undoList = new ArrayList<Bitmap>();
 	private ShakeListener mShaker;
+	private boolean inBrightnessMode = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -249,58 +250,73 @@ public class PictureEditorActivity extends Activity {
 		menu.add(0, 5, 5, "Undo");
 	}
     
+	private void setEditorView()
+	{
+		if (!inBrightnessMode) {
+			return;
+		}
+		inBrightnessMode = false;
+		setContentView(R.layout.editor);
+		imageView = (ImageView) findViewById(R.id.editorImageView);
+		imageView.setImageBitmap(bitmap);
+		registerForContextMenu(imageView);
+	}
+	
+	private void setBrightnessView()
+	{
+		if (inBrightnessMode) {
+			return;
+		}
+		inBrightnessMode = true;
+		setContentView(R.layout.brightness);
+		imageView = (ImageView) findViewById(R.id.brightnessImageView);
+		imageView.setImageBitmap(bitmap);
+		registerForContextMenu(imageView);
+		imageView.setClickable(true);
+		Button plusbutton = (Button) findViewById(R.id.plus);
+		plusbutton.setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v) {
+				undoList.add(0, bitmap);
+				bitmap = doBrightness(bitmap, 33);
+				imageView.setImageBitmap(bitmap);
+			}
+		});
+		
+		Button minusbutton = (Button) findViewById(R.id.minus);
+		minusbutton.setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v) {
+				undoList.add(0,bitmap);
+				bitmap = doDarkness(bitmap, 33);
+				imageView.setImageBitmap(bitmap);
+			}
+		});
+	}
+	
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
 
 		switch (menuItem.getItemId()) {
 		case 0:
-			setContentView(R.layout.editor);
-			imageView = (ImageView) findViewById(R.id.editorImageView);
-			imageView.setImageBitmap(bitmap);
-			registerForContextMenu(imageView);
-			imageView.setClickable(true);
+			setEditorView();
 			undoList.add(0, bitmap);
 			bitmap = toGrayscale(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 1:
-			setContentView(R.layout.editor);
-			imageView = (ImageView) findViewById(R.id.editorImageView);
-			imageView.setImageBitmap(bitmap);
-			registerForContextMenu(imageView);
+			setEditorView();
 			undoList.add(0, bitmap);
 			bitmap = toSephia(bitmap);
 			imageView.setImageBitmap(bitmap);
 			break;
 		case 2:
-			setContentView(R.layout.brightness);
-			imageView = (ImageView) findViewById(R.id.brightnessImageView);
-			imageView.setImageBitmap(bitmap);
-			registerForContextMenu(imageView);
-			imageView.setClickable(true);
-			Button plusbutton = (Button) findViewById(R.id.plus);
-			plusbutton.setOnClickListener(new View.OnClickListener(){
-				public void onClick(View v) {
-					undoList.add(0, bitmap);
-					bitmap = doBrightness(bitmap, 33);
-					imageView.setImageBitmap(bitmap);
-				}
-			});
-			
-			Button minusbutton = (Button) findViewById(R.id.minus);
-			minusbutton.setOnClickListener(new View.OnClickListener(){
-				public void onClick(View v) {
-					undoList.add(0,bitmap);
-					bitmap = doDarkness(bitmap, 33);
-					imageView.setImageBitmap(bitmap);
-				}
-			});
+			if (inBrightnessMode) {
+				setEditorView();
+			} else {
+				setBrightnessView();
+			}
 			break;
 		case 3:
-			setContentView(R.layout.editor);
-			imageView = (ImageView) findViewById(R.id.editorImageView);
-			imageView.setImageBitmap(bitmap);
-			registerForContextMenu(imageView);
+			setEditorView();
 			undoList.add(0, bitmap);
 	        bitmap = toRotate(bitmap);
 	        imageView.setImageBitmap(bitmap);
